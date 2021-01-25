@@ -101,7 +101,7 @@ export default {
             displayName: this.userName,
           });
           alert('アカウントを作成しました');
-          this.$router.push('/signin');
+          this.$router.push('/');
         })
         .catch((error) => {
           alert(error.message);
