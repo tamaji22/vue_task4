@@ -77,7 +77,9 @@ export default {
         .auth()
         .signInWithEmailAndPassword(this.email, this.password)
         .then((user) => {
-          alert('ログインしました。');
+          this.$store.commit('setLoginUserId', user.user.uid);
+          this.$store.commit('setLoginUserName', user.user.displayName);
+          this.$store.dispatch('setLoginUserMoney');
           this.$router.push('/');
         })
         .catch((error) => {

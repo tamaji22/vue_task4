@@ -2,7 +2,6 @@
   <router-view />
 </template>
 
-//
 <style lang="scss">
 @import '../node_modules/bulma/bulma.sass';
 #app {

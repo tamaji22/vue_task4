@@ -77,6 +77,7 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import firebase from 'firebase/app';
+import db from '../plugins/firebase.config';
 
 export default {
   name: 'Signup',
@@ -100,13 +101,36 @@ export default {
           result.user.updateProfile({
             displayName: this.userName,
           });
-          alert('アカウントを作成しました');
+          db.doc(result.user.uid)
+            .set({
+              user_id: result.user.uid,
+              user_name: this.userName,
+              money: 2000,
+            })
+            .catch((error) => {
+              alert(error.message);
+            });
+          this.$store.commit('setLoginUserId', result.user.uid);
+          this.$store.commit('setLoginUserName', this.userName);
+          this.$store.dispatch('setLoginUserMoney');
           this.$router.push('/');
         })
         .catch((error) => {
           alert(error.message);
         });
     },
+    // signIn() {
+    //   firebase
+    //     .auth()
+    //     .signInWithEmailAndPassword(this.email, this.password)
+    //     .then((user) => {
+    //       this.$store.commit('setLoginUserData', user.uid, user.userName, user.money);
+    //       this.$router.push('/');
+    //     })
+    //     .catch((error) => {
+    //       alert(error.message);
+    //     });
+    // },
   },
 };
 </script>
