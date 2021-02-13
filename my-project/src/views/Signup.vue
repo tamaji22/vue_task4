@@ -119,18 +119,6 @@ export default {
           alert(error.message);
         });
     },
-    // signIn() {
-    //   firebase
-    //     .auth()
-    //     .signInWithEmailAndPassword(this.email, this.password)
-    //     .then((user) => {
-    //       this.$store.commit('setLoginUserData', user.uid, user.userName, user.money);
-    //       this.$router.push('/');
-    //     })
-    //     .catch((error) => {
-    //       alert(error.message);
-    //     });
-    // },
   },
 };
 </script>

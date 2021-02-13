@@ -32,18 +32,6 @@ export default createStore({
     setLoginUserMoney({ commit }) {
       commit('setLoginUserMoney');
     },
-    // setLoginUserMoneyAction(ctx) {
-    //   const money = [];
-    //   db.where('fb_id', '==', ctx.state.loginUserData.fbId)
-    //     .get()
-    //     .then((querySnapshot) => {
-    //       querySnapshot.forEach((doc) => {
-    //         console.log(doc.money);
-    //         money.push(doc.money);
-    //       });
-    //       ctx.commit('setLoginUserMoney', money[0]);
-    //     });
-    // },
   },
   modules: {},
 });
