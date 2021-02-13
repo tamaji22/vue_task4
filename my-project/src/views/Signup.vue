@@ -76,8 +76,6 @@
 <script>
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import firebase from 'firebase/app';
-import db from '../plugins/firebase.config';
 
 export default {
   name: 'Signup',
@@ -94,30 +92,12 @@ export default {
   },
   methods: {
     signUp() {
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(this.email, this.password)
-        .then((result) => {
-          result.user.updateProfile({
-            displayName: this.userName,
-          });
-          db.doc(result.user.uid)
-            .set({
-              user_id: result.user.uid,
-              user_name: this.userName,
-              money: 2000,
-            })
-            .catch((error) => {
-              alert(error.message);
-            });
-          this.$store.commit('setLoginUserId', result.user.uid);
-          this.$store.commit('setLoginUserName', this.userName);
-          this.$store.dispatch('setLoginUserMoney');
-          this.$router.push('/');
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
+      this.$store.dispatch('signUp', {
+        userName: this.userName,
+        email: this.email,
+        password: this.password,
+      });
+      this.$router.push('/');
     },
   },
 };

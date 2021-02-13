@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import firebase from 'firebase/app';
 import db from '../plugins/firebase.config';
 
 export default createStore({
@@ -16,15 +17,8 @@ export default createStore({
     setLoginUserName(state, userName) {
       state.loginUserData.userName = userName;
     },
-    setLoginUserMoney(state) {
-      db.doc(state.loginUserData.userId)
-        .get()
-        .then((userData) => {
-          state.loginUserData.money = userData.data().money;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    setLoginUserMoney(state, money) {
+      state.loginUserData.money = money;
     },
   },
   getters: {
@@ -33,8 +27,58 @@ export default createStore({
     },
   },
   actions: {
-    setLoginUserMoney({ commit }) {
-      commit('setLoginUserMoney');
+    signUp({ dispatch, commit }, { userName, email, password }) {
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then((result) => {
+          result.user.updateProfile({
+            displayName: userName,
+          });
+          db.doc(result.user.uid)
+            .set({
+              user_id: result.user.uid,
+              user_name: userName,
+              money: 2000,
+            })
+            .then(() => {
+              commit('setLoginUserId', result.user.uid);
+              commit('setLoginUserName', userName);
+              dispatch('setLoginUserMoney');
+            })
+            .catch((error) => {
+              alert(error.message);
+            })
+            .catch((error) => {
+              alert(error.message);
+            });
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    },
+    signIn({ dispatch, commit }, { email, password }) {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then((user) => {
+          commit('setLoginUserId', user.user.uid);
+          commit('setLoginUserName', user.user.displayName);
+          dispatch('setLoginUserMoney');
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    },
+    setLoginUserMoney({ commit, state }) {
+      db.doc(state.loginUserData.userId)
+        .get()
+        .then((userData) => {
+          commit('setLoginUserMoney', userData.data().money);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
   modules: {},
