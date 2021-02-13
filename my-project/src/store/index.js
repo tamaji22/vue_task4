@@ -3,7 +3,11 @@ import db from '../plugins/firebase.config';
 
 export default createStore({
   state: {
-    loginUserData: {},
+    loginUserData: {
+      userId: '',
+      userName: '',
+      money: 0,
+    },
   },
   mutations: {
     setLoginUserId(state, userId) {
