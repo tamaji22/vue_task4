@@ -57,7 +57,6 @@
 <script>
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import firebase from 'firebase/app';
 
 export default {
   name: 'Signin',
@@ -73,16 +72,11 @@ export default {
   },
   methods: {
     signIn() {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(this.email, this.password)
-        .then((user) => {
-          alert('ログインしました。');
-          this.$router.push('/');
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
+      this.$store.dispatch('signIn', {
+        email: this.email,
+        password: this.password,
+      });
+      this.$router.push('/');
     },
   },
 };

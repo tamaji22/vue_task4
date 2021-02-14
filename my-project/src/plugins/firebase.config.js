@@ -1,17 +1,21 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/firestore';
 import 'firebase/analytics';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDMs5Ykp2x5Ct7BDQD-uvBLeQ3zKvoN0hE',
-  authDomain: 'donation-app-701b3.firebaseapp.com',
-  projectId: 'donation-app-701b3',
-  storageBucket: 'donation-app-701b3.appspot.com',
-  messagingSenderId: '223087418909',
-  appId: '1:223087418909:web:324c5830584bf32134b0f4',
-  measurementId: 'G-EL702YEWXM',
+  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VUE_APP_FIREBASE_APP_ID,
+  measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
+
+const db = firebase.firestore().collection('users');
+export default db;

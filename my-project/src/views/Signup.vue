@@ -76,7 +76,6 @@
 <script>
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import firebase from 'firebase/app';
 
 export default {
   name: 'Signup',
@@ -93,19 +92,12 @@ export default {
   },
   methods: {
     signUp() {
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(this.email, this.password)
-        .then((result) => {
-          result.user.updateProfile({
-            displayName: this.userName,
-          });
-          alert('アカウントを作成しました');
-          this.$router.push('/');
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
+      this.$store.dispatch('signUp', {
+        userName: this.userName,
+        email: this.email,
+        password: this.password,
+      });
+      this.$router.push('/');
     },
   },
 };
