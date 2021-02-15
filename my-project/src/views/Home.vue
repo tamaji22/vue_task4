@@ -8,7 +8,9 @@
       <div class="navbar-menu">
         <div class="navbar-end">
           <div class="navbar-item">残高：{{ loginUserData.money }}</div>
-          <a class="navbar-item button is-link is-outlined">ログアウト</a>
+          <a class="navbar-item button is-link is-outlined" @click="signOut"
+            >ログアウト</a
+          >
         </div>
       </div>
     </nav>
@@ -30,6 +32,12 @@ export default {
   computed: {
     loginUserData() {
       return this.$store.getters.getLoginUserData;
+    },
+  },
+  methods: {
+    signOut() {
+      this.$store.dispatch('signOut');
+      this.$router.go({ path: this.$router.currentRoute.path, force: true });
     },
   },
 };

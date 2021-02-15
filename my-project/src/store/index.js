@@ -48,9 +48,6 @@ export default createStore({
             })
             .catch((error) => {
               alert(error.message);
-            })
-            .catch((error) => {
-              alert(error.message);
             });
         })
         .catch((error) => {
@@ -79,6 +76,9 @@ export default createStore({
         .catch((error) => {
           console.log(error);
         });
+    },
+    signOut() {
+      firebase.auth().signOut();
     },
   },
   modules: {},
