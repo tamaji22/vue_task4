@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
 import firebase from 'firebase/app';
 import db from '../plugins/firebase.config';
+import router from '../router';
 
 export default createStore({
   state: {
@@ -78,7 +79,15 @@ export default createStore({
         });
     },
     signOut() {
-      firebase.auth().signOut();
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          router.push('signin');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
   modules: {},

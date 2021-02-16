@@ -37,7 +37,6 @@ export default {
   methods: {
     signOut() {
       this.$store.dispatch('signOut');
-      this.$router.go({ path: this.$router.currentRoute.path, force: true });
     },
   },
 };
