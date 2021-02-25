@@ -23,11 +23,7 @@ export default createStore({
       state.loginUserData.money = money;
     },
     setUsersData(state, { userId, userName, money }) {
-      state.usersData.push({
-        userId: userId,
-        userName: userName,
-        money: money,
-      });
+      state.usersData.push({ userId, userName, money });
     },
   },
   getters: {
@@ -57,8 +53,6 @@ export default createStore({
               commit('setLoginUserId', result.user.uid);
               commit('setLoginUserName', userName);
               dispatch('setLoginUserMoney');
-            })
-            .then(() => {
               dispatch('setUsersData');
             })
             .catch((error) => {
@@ -77,8 +71,6 @@ export default createStore({
           commit('setLoginUserId', user.user.uid);
           commit('setLoginUserName', user.user.displayName);
           dispatch('setLoginUserMoney');
-        })
-        .then(() => {
           dispatch('setUsersData');
         })
         .catch((error) => {
