@@ -10,6 +10,7 @@ export default createStore({
       userName: '',
       money: 0,
     },
+    usersData: [],
   },
   mutations: {
     setLoginUserId(state, userId) {
@@ -21,10 +22,16 @@ export default createStore({
     setLoginUserMoney(state, money) {
       state.loginUserData.money = money;
     },
+    setUsersData(state, { userId, userName, money }) {
+      state.usersData.push({ userId, userName, money });
+    },
   },
   getters: {
     getLoginUserData(state) {
       return state.loginUserData;
+    },
+    getUsersData(state) {
+      return state.usersData;
     },
   },
   actions: {
@@ -46,6 +53,7 @@ export default createStore({
               commit('setLoginUserId', result.user.uid);
               commit('setLoginUserName', userName);
               dispatch('setLoginUserMoney');
+              dispatch('setUsersData');
             })
             .catch((error) => {
               alert(error.message);
@@ -63,6 +71,7 @@ export default createStore({
           commit('setLoginUserId', user.user.uid);
           commit('setLoginUserName', user.user.displayName);
           dispatch('setLoginUserMoney');
+          dispatch('setUsersData');
         })
         .catch((error) => {
           alert(error.message);
@@ -84,6 +93,22 @@ export default createStore({
         .signOut()
         .then(() => {
           router.push('signin');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    setUsersData({ commit, state }) {
+      db.where('user_id', '!=', state.loginUserData.userId)
+        .get()
+        .then((usersData) => {
+          usersData.forEach((userData) => {
+            commit('setUsersData', {
+              userId: userData.data().user_id,
+              userName: userData.data().user_name,
+              money: userData.data().money,
+            });
+          });
         })
         .catch((error) => {
           console.log(error);
