@@ -11,6 +11,7 @@ export default createStore({
       money: 0,
     },
     usersData: [],
+    amountMoney: 0, // 送金する金額
   },
   mutations: {
     setLoginUserId(state, userId) {
@@ -25,6 +26,9 @@ export default createStore({
     setUsersData(state, { userId, userName, money }) {
       state.usersData.push({ userId, userName, money });
     },
+    setAmountMoney(state, amountMoney) {
+      state.amountMoney = amountMoney;
+    },
   },
   getters: {
     getLoginUserData(state) {
@@ -32,6 +36,9 @@ export default createStore({
     },
     getUsersData(state) {
       return state.usersData;
+    },
+    getAmountMoney(state) {
+      return state.amountMoney;
     },
   },
   actions: {
@@ -109,6 +116,34 @@ export default createStore({
               money: userData.data().money,
             });
           });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    // 送金元のログインユーザから送金する分だけウォレットの金額を減らしてデータ更新
+    updateLoginUserDataMoney({ state }) {
+      state.loginUserData.money =
+        Number(state.loginUserData.money) - Number(state.amountMoney);
+      db.doc(state.loginUserData.userId)
+        .update({
+          money: state.loginUserData.money,
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    // 送金先のユーザから受け取った金額分だけウォレットの金額を増やしてデータ更新
+    updateUserDataMoney({ state }, userData) {
+      userData.money = Number(userData.money) + Number(state.amountMoney);
+      state.usersData.forEach((item) => {
+        if (item.userId === userData.userId) {
+          item.money = userData.money;
+        }
+      });
+      db.doc(userData.userId)
+        .update({
+          money: userData.money,
         })
         .catch((error) => {
           console.log(error);
