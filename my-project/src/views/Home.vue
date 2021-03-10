@@ -99,8 +99,7 @@ export default {
     },
     // ユーザ間で送金して、モーダルを閉じる
     sendMoney(receivedData) {
-      this.$store.dispatch('updateLoginUserDataMoney');
-      this.$store.dispatch('updateUserDataMoney', receivedData);
+      this.$store.dispatch('sendMoney', receivedData);
       this.closeSendMoney();
     },
   },

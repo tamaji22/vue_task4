@@ -29,6 +29,13 @@ export default createStore({
     setAmountMoney(state, amountMoney) {
       state.amountMoney = amountMoney;
     },
+    updateUserDataMoney(state, { userData, userBalance }) {
+      state.usersData.forEach((item) => {
+        if (item.userId === userData.userId) {
+          item.money = userBalance;
+        }
+      });
+    },
   },
   getters: {
     getLoginUserData(state) {
@@ -121,33 +128,33 @@ export default createStore({
           console.log(error);
         });
     },
-    // 送金元のログインユーザから送金する分だけウォレットの金額を減らしてデータ更新
-    updateLoginUserDataMoney({ state }) {
-      state.loginUserData.money =
+    // ユーザ間で送金する
+    async sendMoney({ state, commit }, userData) {
+      const loginUserBalance =
         Number(state.loginUserData.money) - Number(state.amountMoney);
-      db.doc(state.loginUserData.userId)
-        .update({
-          money: state.loginUserData.money,
-        })
-        .catch((error) => {
-          console.log(error);
+      const userBalance = Number(userData.money) + Number(state.amountMoney);
+      try {
+        await firebase.firestore().runTransaction(async (t) => {
+          const receiverDocs = await db
+            .where('user_id', '==', userData.userId)
+            .get();
+          const receiverId = receiverDocs.docs[0].id;
+          const senderDocs = await db
+            .where('user_id', '==', state.loginUserData.userId)
+            .get();
+          const senderId = senderDocs.docs[0].id;
+          await t.update(db.doc(receiverId), {
+            money: userBalance,
+          });
+          commit('updateUserDataMoney', { userData, userBalance });
+          await t.update(db.doc(senderId), {
+            money: loginUserBalance,
+          });
+          commit('setLoginUserMoney', loginUserBalance);
         });
-    },
-    // 送金先のユーザから受け取った金額分だけウォレットの金額を増やしてデータ更新
-    updateUserDataMoney({ state }, userData) {
-      userData.money = Number(userData.money) + Number(state.amountMoney);
-      state.usersData.forEach((item) => {
-        if (item.userId === userData.userId) {
-          item.money = userData.money;
-        }
-      });
-      db.doc(userData.userId)
-        .update({
-          money: userData.money,
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
   modules: {},
