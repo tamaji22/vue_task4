@@ -24,13 +24,24 @@
         <button class="column button is-primary" @click="showWallet(userData)">
           walletを見る
         </button>
-        <button class="column button is-primary">送る</button>
+        <button
+          class="column button is-primary"
+          @click="sendMoneyModal(userData)"
+        >
+          送る
+        </button>
       </div>
       <ShowWallet
         :val="postItem"
         v-show="isWallet"
         @close="closeWallet"
       ></ShowWallet>
+      <SendMoney
+        :val="postItem"
+        v-show="isSendMoney"
+        @close="closeSendMoney"
+        @send="sendMoney"
+      ></SendMoney>
     </div>
     <Footer></Footer>
   </div>
@@ -40,6 +51,7 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ShowWallet from '../components/ShowWallet';
+import SendMoney from '../components/SendMoney';
 
 export default {
   name: 'Home',
@@ -47,11 +59,13 @@ export default {
     Header,
     Footer,
     ShowWallet,
+    SendMoney,
   },
   data() {
     return {
       isWallet: false,
       postItem: '',
+      isSendMoney: false, // 送金用モーダルのフラグ
     };
   },
   computed: {
@@ -72,6 +86,21 @@ export default {
     },
     closeWallet() {
       this.isWallet = false;
+    },
+    // お金を送るためのモーダルを開く
+    sendMoneyModal(userData) {
+      this.postItem = userData;
+      this.isSendMoney = true;
+    },
+    // 送金後のモーダルを閉じる処理
+    closeSendMoney() {
+      this.$store.commit('setAmountMoney', 0);
+      this.isSendMoney = false;
+    },
+    // ユーザ間で送金して、モーダルを閉じる
+    sendMoney(receivedData) {
+      this.$store.dispatch('sendMoney', receivedData);
+      this.closeSendMoney();
     },
   },
 };

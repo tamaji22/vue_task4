@@ -11,6 +11,7 @@ export default createStore({
       money: 0,
     },
     usersData: [],
+    amountMoney: 0, // 送金する金額
   },
   mutations: {
     setLoginUserId(state, userId) {
@@ -25,6 +26,16 @@ export default createStore({
     setUsersData(state, { userId, userName, money }) {
       state.usersData.push({ userId, userName, money });
     },
+    setAmountMoney(state, amountMoney) {
+      state.amountMoney = amountMoney;
+    },
+    updateUserDataMoney(state, { userData, userBalance }) {
+      state.usersData.forEach((item) => {
+        if (item.userId === userData.userId) {
+          item.money = userBalance;
+        }
+      });
+    },
   },
   getters: {
     getLoginUserData(state) {
@@ -32,6 +43,9 @@ export default createStore({
     },
     getUsersData(state) {
       return state.usersData;
+    },
+    getAmountMoney(state) {
+      return state.amountMoney;
     },
   },
   actions: {
@@ -113,6 +127,34 @@ export default createStore({
         .catch((error) => {
           console.log(error);
         });
+    },
+    // ユーザ間で送金する
+    async sendMoney({ state, commit }, userData) {
+      const loginUserBalance =
+        Number(state.loginUserData.money) - Number(state.amountMoney);
+      const userBalance = Number(userData.money) + Number(state.amountMoney);
+      try {
+        await firebase.firestore().runTransaction(async (t) => {
+          const receiverDocs = await db
+            .where('user_id', '==', userData.userId)
+            .get();
+          const receiverId = receiverDocs.docs[0].id;
+          const senderDocs = await db
+            .where('user_id', '==', state.loginUserData.userId)
+            .get();
+          const senderId = senderDocs.docs[0].id;
+          await t.update(db.doc(receiverId), {
+            money: userBalance,
+          });
+          commit('updateUserDataMoney', { userData, userBalance });
+          await t.update(db.doc(senderId), {
+            money: loginUserBalance,
+          });
+          commit('setLoginUserMoney', loginUserBalance);
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
   modules: {},
